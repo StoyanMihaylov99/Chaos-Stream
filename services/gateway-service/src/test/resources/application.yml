@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: transaction-route
+              # We use a more specific path for the gateway route in tests to avoid loops
+              # while still allowing us to test filters like RequestRateLimiter
+              uri: forward:/api/v1/transactions
+              predicates:
+                - Path=/api/v1/transactions/limited
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"

@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: transaction-route
+          # Use forward instead of lb:// to avoid LoadBalancer issues and loops in tests
+          uri: forward:/
+          predicates:
+            - Path=/api/v1/transactions/**

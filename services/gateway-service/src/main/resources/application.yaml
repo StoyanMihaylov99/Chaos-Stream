@@ -9,18 +9,20 @@ spring:
       port: 6379
   cloud:
     gateway:
-      routes:
-        - id: transaction-route
-          uri: lb://gateway-service # Routing to itself if we want to rate limit the TransactionController
-          predicates:
-            - Path=/api/v1/transactions/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
-                redis-rate-limiter.requestedTokens: 1
-                key-resolver: "#{@userKeyResolver}"
+      server:
+        webflux:
+          routes:
+            - id: transaction-route
+              uri: lb://gateway-service # Routing to itself if we want to rate limit the TransactionController
+              predicates:
+                - Path=/api/v1/transactions/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
+                    key-resolver: "#{@userKeyResolver}"
   security:
     oauth2:
       resourceserver:

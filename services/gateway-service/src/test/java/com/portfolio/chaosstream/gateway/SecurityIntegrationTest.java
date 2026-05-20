@@ -88,8 +88,6 @@ class SecurityIntegrationTest {
                 .claim("scope", "message.read")
                 .build();
         when(jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
-        when(rateLimiter.isAllowed(anyString(), anyString()))
-                .thenReturn(Mono.just(new RateLimiter.Response(true, Collections.emptyMap())));
 
         // When, Then
         webTestClient.get()

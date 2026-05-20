@@ -7,3 +7,7 @@ spring:
           uri: forward:/
           predicates:
             - Path=/api/v1/transactions/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@userKeyResolver}"

@@ -40,7 +40,7 @@ class RateLimiterIntegrationTest {
                 .build();
         when(jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
 
-        // Mock RateLimiter to deny request (Rate Limit Exceeded)
+        // Mock RateLimiter to deny a request (Rate Limit Exceeded)
         when(rateLimiter.isAllowed(anyString(), anyString()))
                 .thenReturn(Mono.just(new RateLimiter.Response(false, Map.of("X-Remaining-Tokens", "0"))));
 

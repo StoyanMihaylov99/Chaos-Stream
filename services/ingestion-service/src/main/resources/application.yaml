@@ -1,3 +1,5 @@
+server:
+  port: ${INGESTION_SERVICE_PORT:5555}
 spring:
   application:
     name: ingestion-service

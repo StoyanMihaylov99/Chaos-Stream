@@ -1,4 +1,4 @@
-package com.portfolio.chaosstream.gateway;
+package com.portfolio.chaosstream.gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

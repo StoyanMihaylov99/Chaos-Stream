@@ -15,6 +15,7 @@ public class RateLimiterConfig {
                 .filter(p -> p instanceof JwtAuthenticationToken)
                 .cast(JwtAuthenticationToken.class)
                 .map(JwtAuthenticationToken::getName)
-                .switchIfEmpty(Mono.just("anonymous"));
+                .switchIfEmpty(Mono.defer(() -> Mono.justOrEmpty(exchange.getRequest().getRemoteAddress())
+                        .map(address -> address.getAddress().getHostAddress())));
     }
 }

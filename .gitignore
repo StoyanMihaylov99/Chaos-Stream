@@ -26,6 +26,6 @@ pom.xml.next
 .gitattributes
 
 # Misc
-HELP.md
+.env
 .DS_Store
 *.log

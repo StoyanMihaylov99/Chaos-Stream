@@ -32,7 +32,7 @@ implements the Idempotent Consumer pattern to prevent duplicate entries in the e
 ├── services/                # Application Code
 │   ├── ingestion-service/   # Spring Boot Serivce
 │   ├── validation-service/  # Spring Boot Serivce
-│   ├── audit-service/       # Spring Boot Serivce
+│   ├── storage-service/     # Spring Boot Serivce
 │   └── auth-service/        # Spring Boot Serivce
 ├── infrastructure/          # K8s & Cloud
 │   ├── k8s/                 # YAML manifests (Deployments, Services)

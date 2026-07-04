@@ -1,6 +1,9 @@
 package com.portfolio.chaosstream.auth;
 
 class SecurityConfigConstants {
+    private SecurityConfigConstants() {
+        /* This utility class should not be instantiated */
+    }
 
     static final String LOCALHOST = "http://127.0.0.1:8080" ;
 

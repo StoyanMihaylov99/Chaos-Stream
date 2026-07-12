@@ -31,6 +31,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Install parent POM
+        run: ./mvnw -N install -f ../pom.xml
+        working-directory: services/common-library
+
       - name: Build and install common-library
         run: ./mvnw clean install -DskipTests
         working-directory: services/common-library

@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "event_id": "7b2e1a3c-4d5e-6f7g-8h9i-0j1k2l3m4n5o",
+    "trace_id": "corr-abc-123",
+    "timestamp": "2026-05-14T21:30:00Z",
+    "producer_version": "v1.2.0",
+    "schema_version" : "1.0"
+  },
+  "payload": {
+    "transaction_type": "TRANSFER",
+    "amount": 1250.50,
+    "currency": "USD",
+    "sender_account": "ACC-774411",
+    "receiver_account": "ACC-223355",
+    "status": "PENDING",
+    "idempotency_key": "unique-req-001"
+  },
+  "security": {
+    "user_id": "user_99",
+    "client_id": "transaction-producer-01"
+  }
+}

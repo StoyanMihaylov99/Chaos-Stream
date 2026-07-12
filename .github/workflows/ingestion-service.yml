@@ -5,10 +5,12 @@ on:
     branches: [ main ]
     paths:
       - 'services/ingestion-service/**'
+      - 'services/common-library/**'
   pull_request:
     branches: [ main ]
     paths:
       - 'services/ingestion-service/**'
+      - 'services/common-library/**'
 
 jobs:
   build:
@@ -23,6 +25,10 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+
+      - name: Build and install common-library
+        run: ./mvnw clean install -DskipTests
+        working-directory: services/common-library
 
       - name: Build and Test with Maven
         run: ./mvnw clean verify

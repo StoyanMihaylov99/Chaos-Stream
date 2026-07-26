@@ -8,7 +8,6 @@ RUN mvn -f common-library/pom.xml clean install -DskipTests
 COPY ingestion-service ./ingestion-service
 RUN mvn -f ingestion-service/pom.xml clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/ingestion-service/target/*.jar app.jar

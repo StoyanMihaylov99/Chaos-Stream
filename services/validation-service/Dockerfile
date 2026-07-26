@@ -8,7 +8,6 @@ RUN mvn -f common-library/pom.xml clean install -DskipTests
 COPY validation-service ./validation-service
 RUN mvn -f validation-service/pom.xml clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/validation-service/target/*.jar app.jar

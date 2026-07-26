@@ -6,7 +6,6 @@ RUN mvn -N install
 COPY auth-service ./auth-service
 RUN mvn -f auth-service/pom.xml clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/auth-service/target/*.jar app.jar

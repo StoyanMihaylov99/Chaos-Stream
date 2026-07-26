@@ -6,7 +6,6 @@ RUN mvn -N install
 COPY gateway-service ./gateway-service
 RUN mvn -f gateway-service/pom.xml clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/gateway-service/target/*.jar app.jar

@@ -8,7 +8,6 @@ RUN mvn -f common-library/pom.xml clean install -DskipTests
 COPY storage-service ./storage-service
 RUN mvn -f storage-service/pom.xml clean package -DskipTests
 
-# Run stage
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/storage-service/target/*.jar app.jar

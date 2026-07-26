@@ -97,7 +97,8 @@ services:
   # Application Services
   auth-service:
     build:
-      context: ./services/auth-service
+      context: ./services
+      dockerfile: auth-service/Dockerfile
     container_name: cs-auth-service
     ports:
       - "9000:9000"
@@ -111,7 +112,8 @@ services:
 
   gateway-service:
     build:
-      context: ./services/gateway-service
+      context: ./services
+      dockerfile: gateway-service/Dockerfile
     container_name: cs-gateway-service
     ports:
       - "8080:8080"
@@ -131,7 +133,8 @@ services:
 
   ingestion-service:
     build:
-      context: ./services/ingestion-service
+      context: ./services
+      dockerfile: ingestion-service/Dockerfile
     container_name: cs-ingestion-service
     ports:
       - "5555:5555"
@@ -148,7 +151,8 @@ services:
 
   validation-service:
     build:
-      context: ./services/validation-service
+      context: ./services
+      dockerfile: validation-service/Dockerfile
     container_name: cs-validation-service
     ports:
       - "8082:8082"
@@ -164,7 +168,8 @@ services:
 
   storage-service:
     build:
-      context: ./services/storage-service
+      context: ./services
+      dockerfile: storage-service/Dockerfile
     container_name: cs-storage-service
     ports:
       - "8083:8083"

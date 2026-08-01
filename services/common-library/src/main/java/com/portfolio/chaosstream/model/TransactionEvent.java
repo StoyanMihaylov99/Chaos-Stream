@@ -1,4 +1,4 @@
-package com.portfolio.chaosstream.common_library.model;
+package com.portfolio.chaosstream.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;

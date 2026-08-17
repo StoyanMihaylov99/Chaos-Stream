@@ -15,6 +15,5 @@ public record GlobalErrorResponse(@NotNull Instant timestamp,
                                   @NotNull String message,
                                   @NotNull String path,
                                   @NotNull String traceId,
-                                  @NotNull Map<String,List<String>> validationErrors,
-                                  @NotNull Object details) {
+                                  @NotNull Map<String,List<String>> validationErrors) {
 }

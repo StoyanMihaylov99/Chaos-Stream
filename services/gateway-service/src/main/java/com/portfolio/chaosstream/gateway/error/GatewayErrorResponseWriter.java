@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.chaosstream.exception.ErrorCode;
 import com.portfolio.chaosstream.exception.GlobalErrorResponse;
+import com.portfolio.chaosstream.exception.TraceIdSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -31,12 +32,15 @@ public class GatewayErrorResponseWriter {
     }
 
     public Mono<Void> write(ServerWebExchange exchange, ErrorCode errorCode, String message) {
-        return write(exchange.getResponse(), exchange.getRequest().getPath().value(), errorCode, message);
+        String traceId = TraceIdSupport.resolve(exchange.getRequest().getHeaders().getFirst(TraceIdSupport.HEADER));
+        return write(exchange.getResponse(), exchange.getRequest().getPath().value(), errorCode, message, traceId);
     }
 
-    public Mono<Void> write(ServerHttpResponse response, String path, ErrorCode errorCode, String message) {
+    public Mono<Void> write(ServerHttpResponse response, String path, ErrorCode errorCode, String message,
+            String traceId) {
         response.setStatusCode(errorCode.getStatus());
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        response.getHeaders().set(TraceIdSupport.HEADER, traceId);
 
         GlobalErrorResponse body = GlobalErrorResponse.builder()
                 .timestamp(Instant.now())
@@ -44,6 +48,7 @@ public class GatewayErrorResponseWriter {
                 .error(errorCode.name())
                 .message(message)
                 .path(path)
+                .traceId(traceId)
                 .build();
 
         byte[] bytes = serialize(body, errorCode);

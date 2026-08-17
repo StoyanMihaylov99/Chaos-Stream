@@ -1,6 +1,7 @@
 package com.portfolio.chaosstream.gateway.error;
 
 import com.portfolio.chaosstream.exception.ErrorCode;
+import com.portfolio.chaosstream.exception.TraceIdSupport;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -31,13 +32,14 @@ public class RateLimiterErrorGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpResponse originalResponse = exchange.getResponse();
         String path = exchange.getRequest().getPath().value();
+        String traceId = TraceIdSupport.resolve(exchange.getRequest().getHeaders().getFirst(TraceIdSupport.HEADER));
 
         ServerHttpResponse decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
             @Override
             public Mono<Void> setComplete() {
                 if (getStatusCode() == HttpStatus.TOO_MANY_REQUESTS && !isCommitted()) {
                     return errorResponseWriter.write(originalResponse, path,
-                            ErrorCode.TOO_MANY_REQUESTS, ErrorCode.TOO_MANY_REQUESTS.getDefaultMessage());
+                            ErrorCode.TOO_MANY_REQUESTS, ErrorCode.TOO_MANY_REQUESTS.getDefaultMessage(), traceId);
                 }
                 return super.setComplete();
             }

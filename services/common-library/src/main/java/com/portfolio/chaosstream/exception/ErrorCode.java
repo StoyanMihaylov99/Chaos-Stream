@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
+    VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "The service is temporarily unavailable"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Authentication is required or the provided credentials are invalid"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "You do not have permission to perform this action"),

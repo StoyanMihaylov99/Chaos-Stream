@@ -135,7 +135,20 @@ class SecurityIntegrationTest {
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(401)
                 .jsonPath("$.error").isEqualTo("UNAUTHORIZED")
-                .jsonPath("$.path").isEqualTo("/api/v1/transactions");
+                .jsonPath("$.path").isEqualTo("/api/v1/transactions")
+                .jsonPath("$.traceId").isNotEmpty();
+    }
+
+    @Test
+    void whenCallerSuppliesTraceId_thenEchoedBackInBodyAndHeader() {
+        webTestClient.get()
+                .uri("/api/v1/transactions")
+                .header("X-Trace-Id", "caller-supplied-trace-id")
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectHeader().valueEquals("X-Trace-Id", "caller-supplied-trace-id")
+                .expectBody()
+                .jsonPath("$.traceId").isEqualTo("caller-supplied-trace-id");
     }
 
     @Test

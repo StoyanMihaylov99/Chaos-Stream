@@ -13,6 +13,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.portfolio.chaosstream</groupId>
+			<artifactId>common-library</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>

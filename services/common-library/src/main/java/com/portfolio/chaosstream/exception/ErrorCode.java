@@ -7,7 +7,12 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred"),
-    SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "The service is temporarily unavailable");
+    SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "The service is temporarily unavailable"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Authentication is required or the provided credentials are invalid"),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "You do not have permission to perform this action"),
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "Rate limit exceeded"),
+    ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "No route matches the requested path"),
+    GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "The downstream service did not respond in time");
 
     private final HttpStatus status;
     private final String defaultMessage;
@@ -16,5 +21,4 @@ public enum ErrorCode {
         this.status = status;
         this.defaultMessage = defaultMessage;
     }
-
-    }
+}

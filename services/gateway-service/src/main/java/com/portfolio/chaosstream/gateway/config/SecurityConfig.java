@@ -1,5 +1,7 @@
 package com.portfolio.chaosstream.gateway.config;
 
+import com.portfolio.chaosstream.gateway.error.JsonAccessDeniedHandler;
+import com.portfolio.chaosstream.gateway.error.JsonAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,7 +15,9 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
+            JsonAuthenticationEntryPoint authenticationEntryPoint,
+            JsonAccessDeniedHandler accessDeniedHandler) {
         return http
                 .authorizeExchange(authorize -> authorize
                         .pathMatchers(HttpMethod.POST, "/api/v1/transactions/**").hasAuthority("SCOPE_message.write")
@@ -21,6 +25,9 @@ public class SecurityConfig {
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .build();
     }

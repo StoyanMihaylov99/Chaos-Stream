@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,6 +48,10 @@ class RateLimiterIntegrationTest {
                 .uri("/api/v1/transactions/limited")
                 .header("Authorization", "Bearer mock-token")
                 .exchange()
-                .expectStatus().isEqualTo(429);
+                .expectStatus().isEqualTo(429)
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(429)
+                .jsonPath("$.error").isEqualTo("TOO_MANY_REQUESTS")
+                .jsonPath("$.path").isEqualTo("/api/v1/transactions/limited");
     }
 }

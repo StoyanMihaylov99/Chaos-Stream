@@ -16,6 +16,8 @@ spring:
           min-idle: 4
   cloud:
     gateway:
+      httpclient:
+        response-timeout: 5s
       routes:
         - id: transaction-route
           uri: ${TRANSACTION_SERVICE_URL:http://localhost:5555}

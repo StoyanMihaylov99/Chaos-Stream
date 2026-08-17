@@ -125,4 +125,72 @@ class SecurityIntegrationTest {
                 .expectStatus().isUnauthorized();
     }
 
+    @Test
+    void whenUnauthenticated_thenJsonErrorBody() {
+        // Given, When, Then
+        webTestClient.get()
+                .uri("/api/v1/transactions")
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(401)
+                .jsonPath("$.error").isEqualTo("UNAUTHORIZED")
+                .jsonPath("$.path").isEqualTo("/api/v1/transactions")
+                .jsonPath("$.traceId").isNotEmpty();
+    }
+
+    @Test
+    void whenCallerSuppliesTraceId_thenEchoedBackInBodyAndHeader() {
+        webTestClient.get()
+                .uri("/api/v1/transactions")
+                .header("X-Trace-Id", "caller-supplied-trace-id")
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectHeader().valueEquals("X-Trace-Id", "caller-supplied-trace-id")
+                .expectBody()
+                .jsonPath("$.traceId").isEqualTo("caller-supplied-trace-id");
+    }
+
+    @Test
+    void whenInsufficientScope_thenForbiddenWithJsonErrorBody() {
+        // Given: a token with read scope attempting a write-scoped operation
+        Jwt jwt = Jwt.withTokenValue("mock-token")
+                .header("alg", "none")
+                .claim("sub", "test-user")
+                .claim("scope", "message.read")
+                .build();
+        when(jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
+
+        // When, Then
+        webTestClient.post()
+                .uri("/api/v1/transactions")
+                .header("Authorization", "Bearer mock-token")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(403)
+                .jsonPath("$.error").isEqualTo("FORBIDDEN");
+    }
+
+    @Test
+    void whenNoRouteMatches_thenNotFoundWithJsonErrorBody() {
+        // Given: a validly authenticated request to a path no route predicate covers
+        Jwt jwt = Jwt.withTokenValue("mock-token")
+                .header("alg", "none")
+                .claim("sub", "test-user")
+                .claim("scope", "message.read")
+                .build();
+        when(jwtDecoder.decode(anyString())).thenReturn(Mono.just(jwt));
+
+        // When, Then
+        webTestClient.get()
+                .uri("/api/v1/unmapped-resource")
+                .header("Authorization", "Bearer mock-token")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.error").isEqualTo("ROUTE_NOT_FOUND");
+    }
+
 }

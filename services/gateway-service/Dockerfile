@@ -3,6 +3,8 @@ FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml .
 RUN mvn -N install
+COPY common-library ./common-library
+RUN mvn -f common-library/pom.xml clean install -DskipTests
 COPY gateway-service ./gateway-service
 RUN mvn -f gateway-service/pom.xml clean package -DskipTests
 

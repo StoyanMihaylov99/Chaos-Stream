@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "event_id": "evt-7f3a2b10-8e21-4c9d-9a3e-1a2b3c4d5e6f",
+    "trace_id": "trace-1234567890",
+    "timestamp": "2026-08-19T10:15:30",
+    "producer_version": "1.0.0",
+    "schema_version": "1.0.0"
+  },
+  "payload": {
+    "transaction_type": "TRANSFER",
+    "amount": 250.00,
+    "currency": "USD",
+    "sender_account": "ACC-1001",
+    "receiver_account": "ACC-2002",
+    "status": "PENDING",
+    "idempotency_key": "idem-3f2e1d0c-9b8a-4756-8473-6f5e4d3c2b1a"
+  },
+  "security": {
+    "user_id": "user_99",
+    "client_id": "transaction-producer-01"
+  }
+}

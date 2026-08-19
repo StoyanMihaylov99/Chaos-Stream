@@ -12,3 +12,5 @@ app:
   kafka:
     topics:
       transactions-ingested: transactions.ingested.v1
+    producer:
+      publish-timeout-ms: 3000

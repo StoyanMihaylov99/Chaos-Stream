@@ -19,7 +19,7 @@ Ingestion Layer: A Spring Boot Ingestion Service performs rapid syntactic valida
 raw events to Kafka. This acts as a buffer, protecting downstream services from traffic spikes.
 
 Processing Layer: The Validation Service consumes events asynchronously. It implements complex business logic using Java
-21 Sealed Classes for type-safe transaction handling and utilizes the Dead Letter Queue (DLQ) pattern to isolate
+21 Sealed Classes for type-safe transaction handling and uses the Dead Letter Queue (DLQ) pattern to isolate
 malformed business data without halting the pipeline.
 
 Persistence Layer: The Audit Service ensures data integrity by persisting validated transactions into PostgreSQL. It
@@ -30,10 +30,10 @@ implements the Idempotent Consumer pattern to prevent duplicate entries in the e
 ```chaos-stream/
 ├── .github/workflows/       # CI/CD pipelines
 ├── services/                # Application Code
-│   ├── ingestion-service/   # Spring Boot Serivce
-│   ├── validation-service/  # Spring Boot Serivce
-│   ├── storage-service/     # Spring Boot Serivce
-│   └── auth-service/        # Spring Boot Serivce
+│   ├── ingestion-service/   # Spring Boot Service
+│   ├── validation-service/  # Spring Boot Service
+│   ├── storage-service/     # Spring Boot Service
+│   └── auth-service/        # Spring Boot Service
 ├── infrastructure/          # K8s & Cloud
 │   ├── k8s/                 # YAML manifests (Deployments, Services)
 │   ├── monitoring/          # Grafana dashboards, Prometheus configs
@@ -52,7 +52,7 @@ implements the Idempotent Consumer pattern to prevent duplicate entries in the e
 * Docker - Containerization
 * K8s - Orchestration
 * Prometheus & Grafana - Observability
-* CI/CD - Github Actions
+* CI/CD - GitHub Actions
 
-<img width="1741" height="752" alt="sceenshot" src="https://github.com/user-attachments/assets/0668412c-9622-42a7-a36d-e0118a1db224" />
+<img width="1741" height="752" alt="screenshot" src="https://github.com/user-attachments/assets/0668412c-9622-42a7-a36d-e0118a1db224" />
 

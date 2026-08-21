@@ -13,7 +13,8 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "You do not have permission to perform this action"),
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "Rate limit exceeded"),
     ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "No route matches the requested path"),
-    GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "The downstream service did not respond in time");
+    GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "The downstream service did not respond in time"),
+    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "The requested resource was not found");
 
     private final HttpStatus status;
     private final String defaultMessage;

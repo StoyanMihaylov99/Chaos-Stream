@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "event_id": "7b2e1a3c-4d5e-6f7g-8h9i-0j1k2l3m4n5o",
-    "timestamp": "2026-05-14T21:30:00Z",
+    "event_id": "7b2e1a3c-4d5e-4f7a-8b9c-0d1e2f3a4b5c",
+    "timestamp": "2026-08-21T09:00:00",
     "producer_version": "v1.2.0"
   },
   "payload": {
@@ -10,7 +10,8 @@
     "currency": "USD",
     "sender_account": "ACC-774411",
     "receiver_account": "ACC-223355",
-    "status": "PENDING"
+    "status": "PENDING",
+    "idempotency_key": "idem-7b2e1a3c-4d5e-4f7a-8b9c-0d1e2f3a4b5c"
   },
   "security": {
     "user_id": "user_99",

@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: chaos-stream
+      POSTGRES_DB: chaosstream
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     healthcheck:
@@ -123,10 +123,13 @@ services:
       - SPRING_DATA_REDIS_HOST=redis
       - AUTH_SERVICE_URL=http://auth-service:9000
       - TRANSACTION_SERVICE_URL=http://ingestion-service:5555
+      - STORAGE_SERVICE_URL=http://storage-service:8083
     depends_on:
       redis:
         condition: service_healthy
       auth-service:
+        condition: service_started
+      storage-service:
         condition: service_started
     networks:
       - chaos-network

@@ -19,10 +19,23 @@ spring:
       httpclient:
         response-timeout: 5s
       routes:
-        - id: transaction-route
+        - id: transaction-ingest-route
           uri: ${TRANSACTION_SERVICE_URL:http://localhost:5555}
           predicates:
             - Path=/api/v1/transactions/**
+            - Method=POST
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+                key-resolver: "#{@userKeyResolver}"
+        - id: transaction-query-route
+          uri: ${STORAGE_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/transactions/**
+            - Method=GET
           filters:
             - name: RequestRateLimiter
               args:

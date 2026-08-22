@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.gateway.filter.ratelimit.RateLimiter;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@AutoConfigureObservability
 class SecurityIntegrationTest {
 
     @Autowired
@@ -170,6 +172,15 @@ class SecurityIntegrationTest {
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(403)
                 .jsonPath("$.error").isEqualTo("FORBIDDEN");
+    }
+
+    @Test
+    void whenScrapingPrometheusMetrics_thenNoAuthRequired() {
+        // Given, When, Then
+        webTestClient.get()
+                .uri("/actuator/prometheus")
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test

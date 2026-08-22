@@ -20,6 +20,7 @@ public class SecurityConfig {
             JsonAccessDeniedHandler accessDeniedHandler) {
         return http
                 .authorizeExchange(authorize -> authorize
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/transactions/**").hasAuthority("SCOPE_message.write")
                         .pathMatchers(HttpMethod.GET, "/api/v1/transactions/**").hasAuthority("SCOPE_message.read")
                         .anyExchange().authenticated()

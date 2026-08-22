@@ -1,0 +1,179 @@
+{
+  "id": null,
+  "uid": "chaos-stream-overview",
+  "title": "Chaos Stream - Services Overview",
+  "tags": ["chaos-stream"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "loki" },
+        "query": "label_values(container)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".+",
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    { "id": 1, "type": "row", "title": "Overview", "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 }, "collapsed": false, "panels": [] },
+
+    {
+      "id": 2, "type": "stat", "title": "Services Up",
+      "description": "How many of the 5 app services Prometheus can currently reach (out of 5).",
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(up{job!=\"prometheus\"})", "legendFormat": "Up", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "none", "max": 5, "min": 0,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "red", "value": null }, { "color": "yellow", "value": 3 }, { "color": "green", "value": 5 }
+        ]}}, "overrides": [] },
+      "options": { "graphMode": "none", "textMode": "value_and_name" }
+    },
+    {
+      "id": 3, "type": "stat", "title": "Total Request Rate",
+      "description": "Combined HTTP request rate across all services (RED: Rate).",
+      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{job!=\"prometheus\"}[$__rate_interval]))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps", "decimals": 2 }, "overrides": [] }
+    },
+    {
+      "id": 4, "type": "stat", "title": "Error Rate %",
+      "description": "Share of requests returning 4xx/5xx across all services (RED: Errors).",
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "100 * sum(rate(http_server_requests_seconds_count{status=~\"4..|5..\", job!=\"prometheus\"}[$__rate_interval])) / sum(rate(http_server_requests_seconds_count{job!=\"prometheus\"}[$__rate_interval]))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "red", "value": 5 }
+        ]}}, "overrides": [] }
+    },
+    {
+      "id": 5, "type": "stat", "title": "Avg Latency",
+      "description": "Average HTTP response time across all services (RED: Duration).",
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "1000 * sum(rate(http_server_requests_seconds_sum{job!=\"prometheus\"}[$__rate_interval])) / sum(rate(http_server_requests_seconds_count{job!=\"prometheus\"}[$__rate_interval]))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "ms", "decimals": 1 }, "overrides": [] }
+    },
+
+    { "id": 10, "type": "row", "title": "HTTP Traffic (RED method)", "gridPos": { "x": 0, "y": 5, "w": 24, "h": 1 }, "collapsed": false, "panels": [] },
+
+    {
+      "id": 11, "type": "timeseries", "title": "Request Rate by Service",
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{job!=\"prometheus\"}[$__rate_interval])) by (job)", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 12, "type": "timeseries", "title": "p95 / p99 Latency by Service",
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job!=\"prometheus\"}[$__rate_interval])) by (le, job))", "legendFormat": "{{job}} p95", "refId": "A" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{job!=\"prometheus\"}[$__rate_interval])) by (le, job))", "legendFormat": "{{job}} p99", "refId": "B" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 13, "type": "timeseries", "title": "Error Rate (4xx/5xx) by Service",
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{status=~\"4..|5..\", job!=\"prometheus\"}[$__rate_interval])) by (job)", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps",
+        "custom": { "drawStyle": "line", "fillOpacity": 20 },
+        "color": { "mode": "palette-classic" },
+        "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 14, "type": "timeseries", "title": "401 / 403 / 404 / 500 Responses by Service",
+      "description": "Explicit breakdown of the status codes called out for this dashboard: unauthorized, forbidden, not found, server error.",
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(http_server_requests_seconds_count{status=~\"401|403|404|500\", job!=\"prometheus\"}[$__rate_interval])) by (job, status)", "legendFormat": "{{job}} [{{status}}]", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+
+    { "id": 20, "type": "row", "title": "Resource Usage (CPU / Memory / JVM)", "gridPos": { "x": 0, "y": 22, "w": 24, "h": 1 }, "collapsed": false, "panels": [] },
+
+    {
+      "id": 21, "type": "timeseries", "title": "CPU Usage by Service",
+      "gridPos": { "x": 0, "y": 23, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "process_cpu_usage{job!=\"prometheus\"} * 100", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 22, "type": "timeseries", "title": "JVM Heap Memory Used by Service",
+      "gridPos": { "x": 8, "y": 23, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(jvm_memory_used_bytes{area=\"heap\", job!=\"prometheus\"}) by (job)", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "bytes", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 23, "type": "timeseries", "title": "JVM Live Threads by Service",
+      "gridPos": { "x": 16, "y": 23, "w": 8, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "jvm_threads_live_threads{job!=\"prometheus\"}", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 24, "type": "timeseries", "title": "GC Pause Time by Service",
+      "description": "Rate of time spent paused in garbage collection - a rising trend signals memory pressure before an OutOfMemoryError happens.",
+      "gridPos": { "x": 0, "y": 31, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "sum(rate(jvm_gc_pause_seconds_sum{job!=\"prometheus\"}[$__rate_interval])) by (job)", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "s", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 25, "type": "timeseries", "title": "JVM Heap Used (% of Max) by Service",
+      "description": "Memory saturation signal (USE method) - sustained high values mean the service is close to an OutOfMemoryError.",
+      "gridPos": { "x": 12, "y": 31, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "100 * sum(jvm_memory_used_bytes{area=\"heap\", job!=\"prometheus\"}) by (job) / sum(jvm_memory_max_bytes{area=\"heap\", job!=\"prometheus\"}) by (job)", "legendFormat": "{{job}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }
+        ]}}, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } }
+    },
+
+    { "id": 30, "type": "row", "title": "Logs", "gridPos": { "x": 0, "y": 39, "w": 24, "h": 1 }, "collapsed": false, "panels": [] },
+
+    {
+      "id": 31, "type": "logs", "title": "Live Logs",
+      "description": "Filter by the 'service' template variable above to narrow to one or more containers. Excludes the monitoring stack's own containers (grafana/loki/promtail/prometheus) - infra noise, not Chaos Stream business logic.",
+      "gridPos": { "x": 0, "y": 40, "w": 24, "h": 10 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [{ "expr": "{container=~\"$service\", container!~\"cs-grafana|cs-loki|cs-promtail|cs-prometheus\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": true, "wrapLogMessages": false, "sortOrder": "Descending", "enableLogDetails": true }
+    },
+    {
+      "id": 32, "type": "timeseries", "title": "ERROR Log Rate by Container",
+      "description": "Count of log lines containing ERROR, correlating application-level errors with the HTTP error-rate panels above. Excludes the monitoring stack's own containers, which log their own internal query-cancellation chatter as ERROR and would otherwise drown out real application errors.",
+      "gridPos": { "x": 0, "y": 50, "w": 24, "h": 8 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [{ "expr": "sum(count_over_time({container=~\"$service\", container!~\"cs-grafana|cs-loki|cs-promtail|cs-prometheus\"} |~ \"(?i)error\" [$__interval])) by (container)", "legendFormat": "{{container}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "none", "min": 0 }, "overrides": [] },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["sum", "max"] }, "tooltip": { "mode": "multi" } }
+    }
+  ]
+}

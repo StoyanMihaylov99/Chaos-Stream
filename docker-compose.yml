@@ -68,6 +68,30 @@ services:
     networks:
       - chaos-network
 
+  loki:
+    image: grafana/loki:latest
+    container_name: cs-loki
+    volumes:
+      - ./infrastructure/monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - chaos-network
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: cs-promtail
+    volumes:
+      - ./infrastructure/monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - chaos-network
+
   grafana:
     image: grafana/grafana:latest
     container_name: cs-grafana
@@ -75,10 +99,15 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./infrastructure/monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./infrastructure/monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
     networks:
       - chaos-network
     depends_on:
       - prometheus
+      - loki
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -192,3 +221,7 @@ services:
 networks:
   chaos-network:
     driver: bridge
+
+volumes:
+  grafana-data:
+  loki-data:

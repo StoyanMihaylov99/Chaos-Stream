@@ -55,6 +55,8 @@ implements the Idempotent Consumer pattern to prevent duplicate entries in the e
 * CI/CD - GitHub Actions
 
 ### Application Architecture visualization
-<img width="4925" height="2741" alt="image" src="https://github.com/user-attachments/assets/d07ba0ba-5302-4d15-8341-37e52040a298" />
+<img width="1457" height="657" alt="image" src="https://github.com/user-attachments/assets/3a10e787-f6da-49ea-a271-33250019f295" />
+
+
 
 

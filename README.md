@@ -54,5 +54,7 @@ implements the Idempotent Consumer pattern to prevent duplicate entries in the e
 * Prometheus & Grafana - Observability
 * CI/CD - GitHub Actions
 
-<img width="1741" height="752" alt="screenshot" src="https://github.com/user-attachments/assets/0668412c-9622-42a7-a36d-e0118a1db224" />
+### Application Architecture visualization
+<img width="4925" height="2741" alt="image" src="https://github.com/user-attachments/assets/d07ba0ba-5302-4d15-8341-37e52040a298" />
+
 

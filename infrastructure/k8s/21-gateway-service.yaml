@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: chaos-stream
+spec:
+  selector:
+    app: gateway-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  namespace: chaos-stream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      # Confirmed live: without this, Kubernetes auto-injects REDIS_PORT=tcp://10.96.x.x:6379
+      # into this pod (legacy Docker-links compatibility for every Service in the namespace),
+      # which collides with and overrides this app's own ${REDIS_PORT:6379} placeholder,
+      # crashing Spring Data Redis's property binding on startup.
+      enableServiceLinks: false
+      containers:
+        - name: gateway-service
+          image: chaos-stream-gateway-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: chaos-stream-config
+                  key: SPRING_PROFILES_ACTIVE
+            - name: SPRING_DATA_REDIS_HOST
+              value: "redis"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:9000"
+            - name: TRANSACTION_SERVICE_URL
+              value: "http://ingestion-service:5555"
+            - name: STORAGE_SERVICE_URL
+              value: "http://storage-service:8083"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

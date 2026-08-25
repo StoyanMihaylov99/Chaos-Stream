@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: chaos-stream
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: chaos-stream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      # Prevents Kubernetes from auto-injecting legacy Docker-links-style env vars for every
+      # Service in the namespace (e.g. REDIS_PORT=tcp://10.96.x.x:6379) into this pod. Confirmed
+      # live that this collides with Spring's own ${REDIS_PORT:6379}-style placeholders — see
+      # gateway-service's Deployment for where it actually broke.
+      enableServiceLinks: false
+      containers:
+        - name: auth-service
+          image: chaos-stream-auth-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            - name: SERVER_PORT
+              value: "9000"
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: chaos-stream-config
+                  key: SPRING_PROFILES_ACTIVE
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9000
+            initialDelaySeconds: 40
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

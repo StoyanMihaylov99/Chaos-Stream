@@ -1,0 +1,8 @@
+ apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chaos-stream-config
+  namespace: chaos-stream
+data:
+  SPRING_PROFILES_ACTIVE: "docker"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
